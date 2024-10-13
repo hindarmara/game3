@@ -1,5 +1,7 @@
 package ca.bcit.comp2522.game3;
 
+import ca.bcit.comp2522.entity.Player;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -11,7 +13,7 @@ public class GamePanel
     final int originalTileSize = 16; // 16 X 16 tile for characters
     final int scale = 3;
 
-    final int tileSize = originalTileSize * scale; // 48 X 48, actual tile size shown in game screen
+    private final int tileSize = originalTileSize * scale; // 48 X 48, actual tile size shown in game screen
     final int maxScreenCol = 16;
     final int maxScreenRow = 12;
     final int screenWidth = tileSize * maxScreenCol; // 48 X 16 = 768 pixels
@@ -22,6 +24,7 @@ public class GamePanel
 
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
+    Player player = new Player(this, keyH);
 
     // Set player's default position
     int playerX = 100;
@@ -35,6 +38,11 @@ public class GamePanel
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+    }
+
+    public int getTileSize()
+    {
+        return tileSize;
     }
 
     public void startGameThread()
@@ -118,22 +126,7 @@ public class GamePanel
 
     public void update()
     {
-        if(keyH.upPressed == true)
-        {
-            playerY -= playerSpeed;
-        }
-        else if(keyH.downPressed == true)
-        {
-            playerY += playerSpeed;
-        }
-        else if(keyH.leftPressed == true)
-        {
-            playerX -= playerSpeed;
-        }
-        else if(keyH.rightPressed == true)
-        {
-            playerX += playerSpeed;
-        }
+        player.update();
     }
 
     public void paintComponent(Graphics g)
@@ -142,9 +135,7 @@ public class GamePanel
 
         Graphics2D g2 = (Graphics2D) g; // casting Graphics g to Graphics2D
 
-        g2.setColor(Color.white);
-
-        g2.fillRect(playerX, playerY, tileSize, tileSize); // position of the character
+        player.draw(g2);
 
         g2.dispose();
     }
